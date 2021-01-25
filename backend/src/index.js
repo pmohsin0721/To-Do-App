@@ -10,17 +10,18 @@ const app = express();
 app.use(express.json()); // added body key to req
 app.use(cors({
     credentials: true,
-    origin: "http://localhost:8080"
+    origin: "https://todoapp-front-end.herokuapp.com"
 }));
+app.set("trust proxy", 1);
 app.use(
   session({
     secret: session_secret,
-    cookie: { maxAge: 1*60*60*1000 }
+    cookie: { maxAge: 1*60*60*1000, sameSite: "none", secure: true }
   })
 ); // adds a property called session to req
 
 // connect
-const db = mongoose.createConnection("mongodb://localhost:27017/TodoApp", {
+const db = mongoose.createConnection("mongodb+srv://user:mohsin@todoapp.epwzz.mongodb.net/todoapp?retryWrites=true&w=majority", {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
@@ -153,4 +154,8 @@ app.get('/userinfo', AuthMiddleware, async (req, res) => {
     res.send({ userName : user.userName });
 });
 
-app.listen(9999);
+app.get("/", async (req,res)=>{
+  res.send("server works");
+});
+
+app.listen(process.env.PORT);
